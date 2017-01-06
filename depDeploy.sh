@@ -35,6 +35,17 @@ log () {
 }
 log " --> Starting DEP Deployment Wrapper"
 
+## Enable Debugging: Set the varible below to 1 to enable
+enableDebug="0"
+
+if [[ $enableDebug -eq 1 ]]; then
+	set -x
+	logFile="/var/log/systemDeployment_DEBUG.log"
+	log "#################################"
+	log "####### Debugging Enabled: $(date)"
+	log "#################################"
+fi
+
 ## Arguments
 enableFilevault="$4"
 deployTrigger="$5"
