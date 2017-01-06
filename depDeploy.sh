@@ -88,13 +88,16 @@ fTellPS () { # Sends an Apple Script Call to Progress Screen. Arg 1 is the Varia
 			set $1 of every configuration to $2
 			end tell
 		EOD
+		log "System Deployment Monitor (Config): Set $1 to $2"
 	else
 		osascript <<-EOD
 		tell application "System Deployment Monitor"
 		set htmlURL of every configuration to "file:///Library/Application%20Support/JAMF/bin/System%20Deployment%20Monitor.app/Contents/Resources/$2.html"
 		end tell
 		EOD
+		log "System Deployment Monitor (htmlURL): Set $1 to $2"
 	fi
+
 }
 
 fShowInstallProgress () { 	#Sub-function to display Progress Screen
