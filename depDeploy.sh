@@ -1,6 +1,6 @@
 #!/bin/bash
 ###############################################################################
-# DEP deploy policy GUI Wrapper - Release 3 - Generic
+# DEP deploy policy GUI Wrapper - Release 5 - Generic
 # Will Green, June 2016
 # Summary: Runs the deploy policy on Casper, with a nice Progress showing
 #          the user what is going on. Designed for DEP.
@@ -113,19 +113,20 @@ fTellPS () { # Sends an Apple Script Call to Progress Screen. Arg 1 is the Varia
 
 fShowInstallProgress () { 	#Sub-function to display Progress Screen
 "$psPath" &
-sleep 1
-fTellPS fullscreen true
+sleep 5
 }
 
 fRunDeploy () {
   #	Default Stage 1
 	log "Starting Casper Deployment..."
+	fTellPS stage startDeploy
 	jamf policy -event "$deployTrigger" 2>&1 | while read -r line; do
 		##	Re-run the sub-function to display the Progress Screen window and check
 		##	if we are not seeing 1 items for Progress Screen in the process list
 		if [[ $(ps aux | pgrep "System Deployment Monitor" | wc -l | sed 's/^ *//') != "1" ]]; then
 			killall "System Deployment Monitor"
 			fShowInstallProgress
+			fTellPS stage startDeploy
 		fi
 		echo "$line" >> $logFile
 	done
@@ -141,6 +142,7 @@ fRunDeploy () {
 			if [[ $(ps aux | pgrep "System Deployment Monitor" | wc -l | sed 's/^ *//') != "1" ]]; then
 				killall "System Deployment Monitor"
 				fShowInstallProgress
+				fTellPS stage "$customTrigger"
 			fi
 			echo "$line" >> $logFile
 		done
@@ -156,6 +158,7 @@ fRunDeploy () {
 		if [[ $(ps aux | pgrep "System Deployment Monitor" | wc -l | sed 's/^ *//') != "1" ]]; then
 			killall "System Deployment Monitor"
 			fShowInstallProgress
+			fTellPS stage stage2
 		fi
 		echo "$line" >> $logFile
 	done
