@@ -1,6 +1,6 @@
 #!/bin/bash
 ###############################################################################
-# DEP deploy policy GUI Wrapper - Release 5 - Generic
+# DEP deploy policy GUI Wrapper - Release 6 - Generic
 # Will Green, June 2016
 # Summary: Runs the deploy policy on Casper, with a nice Progress showing
 #          the user what is going on. Designed for DEP.
@@ -189,8 +189,39 @@ fEnableFileVault () {
 	sleep 10 # ensure the Mac has time to escrow the key
 }
 
+fCheckConsoleUser () { # Check that the user has actually logged in. Don't run until we do.
+	currentUser=$(who | grep console | awk '{print $1}')
+
+	case $currentUser in
+		"_mbsetupuser" )
+			while [[ $(who | grep console | awk '{print $1}') == "_mbsetupuser" ]]; do
+				log "Setup Assistant is still running. Waiting until complete..."
+				sleep 10
+			done
+			;;
+		"loginwindow" )
+			while [[ $(who | grep console | awk '{print $1}') == "loginwindow" ]]; do
+				log "Mac is still at loginwindow. Waiting until first login..."
+				sleep 10
+			done
+		 ;;
+		 *)
+		  log "$currentUser is logged in. Continuing..."
+		 ;;
+	esac
+
+
+	if [[ "$currentUser" == "_mbsetupuser" ]]; then
+		while [[ $(who | grep console | awk '{print $1}') == "_mbsetupuser" ]]; do
+			log "Setup Assistant is still running. Waiting until complete..."
+			sleep 5
+		done
+	fi
+}
+
 ## Main script
 log "Reticulating Splines..."
+fCheckConsoleUser
 fShowInstallProgress
 fTellPS buildTime 2000 # Tell Progress Screen how many seconds you expect this to take. 2000 seconds = ~30 minutes
 caffeinate -disu & # No sleeping for you!
