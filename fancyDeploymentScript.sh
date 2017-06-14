@@ -1,7 +1,7 @@
 #!/bin/bash
 ###############################################################################
 # Deploy Policy GUI Wrapper
-# Will Green, April 2016
+# Will Green, June 2017
 # Summary: Runs the deploy policy on Casper, with a nice CocoaDialog Box showing
 #          the user what is going on.
 #
@@ -144,8 +144,32 @@ fEnableFileVault () {
 	jamf policy -event "$fvEnableTrigger" -verbose
 }
 
+fCheckConsoleUser () { # Check that the user has actually logged in. Don't run until we do.
+	currentUser=$(who | grep console | awk '{print $1}')
+
+	case $currentUser in
+		"_mbsetupuser" )
+			while [[ $(who | grep console | awk '{print $1}') == "_mbsetupuser" ]]; do
+				log "Setup Assistant is still running. Waiting until complete..."
+				sleep 10
+			done
+			;;
+		"loginwindow" )
+			while [[ $(who | grep console | awk '{print $1}') == "loginwindow" ]]; do
+				log "Mac is still at loginwindow. Waiting until first login..."
+				sleep 10
+			done
+		 ;;
+		 *)
+		  log "$currentUser is logged in. Continuing..."
+		 ;;
+	esac
+
+}
+
 ## Main script
 caffeinate -disu & # No sleeping for you!
+fCheckConsoleUser
 fRunDeploy
 
 if [[ $deployFilevault -eq "1" ]]; then # If FileVault was set to deploy, do so.
