@@ -6,7 +6,7 @@
 ## installation from unauthorized removal (InstallGuard) is not as it doesn't
 ## accept password input from stdin (or, if it does, it's entirely 
 ## undocumented). This script includes an `expect` section that overcomes this,
-## allowing MacAdmins to easily deploy Falcon with aumated client managemnet
+## allowing MacAdmins to easily deploy Falcon with aumated client management
 ## tools such as JAMF or Munki.
 ##
 ## Variables:
